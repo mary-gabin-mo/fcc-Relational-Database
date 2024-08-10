@@ -1,2 +1,2 @@
 # fcc-Relational-Database
-freeCodeCamp's Relational Database Certification Activities
+freeCodeCamp's Relational Database Certification Projects
