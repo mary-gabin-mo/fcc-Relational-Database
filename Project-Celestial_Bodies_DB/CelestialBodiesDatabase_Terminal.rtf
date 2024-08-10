@@ -1,0 +1,441 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2759
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fswiss\fcharset0 Helvetica-Oblique;
+}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww18840\viewh18700\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Celestial Bodies Database\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 \
+\
+-------------------- CREATING DATABASE --------------------
+\f0\b0 \
+postgres=> 
+\f2\i CREATE DATABASE universe;
+\f0\i0 \
+CREATE DATABASE\
+postgres=> 
+\f2\i \\l
+\f0\i0 \
+                                 List of databases\
++-----------+--------------+----------+---------+---------+-----------------------+\
+|   Name    |    Owner     | Encoding | Collate |  Ctype  |   Access privileges   |\
++-----------+--------------+----------+---------+---------+-----------------------+\
+| postgres  | postgres     | UTF8     | C.UTF-8 | C.UTF-8 |                       |\
+| template0 | postgres     | UTF8     | C.UTF-8 | C.UTF-8 | =c/postgres          +|\
+|           |              |          |         |         | postgres=CTc/postgres |\
+| template1 | postgres     | UTF8     | C.UTF-8 | C.UTF-8 | =c/postgres          +|\
+|           |              |          |         |         | postgres=CTc/postgres |\
+| universe  | freecodecamp | UTF8     | C.UTF-8 | C.UTF-8 |                       |\
++-----------+--------------+----------+---------+---------+-----------------------+\
+(4 rows)\
+\
+postgres=>
+\f2\i  \\c universe
+\f0\i0 \
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)\
+You are now connected to database "universe" as user "freecodecamp".\
+universe=> 
+\f2\i \\d
+\f0\i0 \
+Did not find any relations.\
+
+\f1\b \
+\
+-------------------- CREATING TABLES --------------------
+\f0\b0 \
+universe=> 
+\f2\i CREATE TABLE galaxy_type(
+\f0\i0 \
+universe(>    
+\f2\i  name VARCHAR(30) UNIQUE NOT NULL,\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\i0 \cf0 universe(> 
+\f2\i     is_regular BOOLEAN,\
+
+\f0\i0 universe(>  
+\f2\i    galaxy_type_id SERIAL,\
+
+\f0\i0 universe(>  
+\f2\i    PRIMARY KEY(galaxy_type_id));
+\f0\i0 \
+CREATE TABLE\
+universe=> 
+\f2\i \\d galaxy_type
+\f0\i0 \
+                                              Table "public.galaxy_type"\
++----------------+-----------------------+-----------+----------+-----------------------------------------------------+\
+|     Column     |         Type          | Collation | Nullable |                       Default                       |\
++----------------+-----------------------+-----------+----------+-----------------------------------------------------+\
+| name           | character varying(30) |           | not null |                                                     |\
+| is_regular     | boolean               |           |          |                                                     |\
+| galaxy_type_id | integer               |           | not null | nextval('galaxy_type_galaxy_type_id_seq'::regclass) |\
++----------------+-----------------------+-----------+----------+-----------------------------------------------------+\
+Indexes:\
+    "galaxy_type_pkey" PRIMARY KEY, btree (galaxy_type_id)\
+    "galaxy_type_name_key" UNIQUE CONSTRAINT, btree (name)\
+\
+universe=> 
+\f2\i CREATE TABLE galaxy(
+\f0\i0 \
+universe(>    
+\f2\i  galaxy_id SERIAL,\
+
+\f0\i0 universe(> 
+\f2\i     name VARCHAR(30) UNIQUE NOT NULL,\
+
+\f0\i0 universe(>  
+\f2\i    galaxy_type_id INT, \
+
+\f0\i0 universe(> 
+\f2\i     distance_in_Mly NUMERIC NOT NULL,\
+
+\f0\i0 universe(>  
+\f2\i    constellation VARCHAR(30),\
+
+\f0\i0 universe(> 
+\f2\i     PRIMARY KEY(galaxy_id),\
+
+\f0\i0 universe(> 
+\f2\i     CONSTRAINT fk_galaxy_type_id\
+
+\f0\i0 universe(> 
+\f2\i         FOREIGN KEY(galaxy_type_id)\
+
+\f0\i0 universe(> 
+\f2\i         REFERENCES galaxy_type(galaxy_type_id));
+\f0\i0 \
+CREATE TABLE\
+universe=>
+\f2\i  \\d galaxy
+\f0\i0 \
+                                            Table "public.galaxy"\
++-----------------+-----------------------+-----------+----------+-------------------------------------------+\
+|     Column      |         Type          | Collation | Nullable |                  Default                  |\
++-----------------+-----------------------+-----------+----------+-------------------------------------------+\
+| galaxy_id       | integer               |           | not null | nextval('galaxy_galaxy_id_seq'::regclass) |\
+| name            | character varying(30) |           | not null |                                           |\
+| galaxy_type_id  | integer               |           |          |                                           |\
+| distance_in_mly | numeric               |           | not null |                                           |\
+| constellation   | character varying(30) |           |          |                                           |\
++-----------------+-----------------------+-----------+----------+-------------------------------------------+\
+Indexes:\
+    "galaxy_pkey" PRIMARY KEY, btree (galaxy_id)\
+    "galaxy_name_key" UNIQUE CONSTRAINT, btree (name)\
+Foreign-key constraints:\
+    "fk_galaxy_type_id" FOREIGN KEY (galaxy_type_id) REFERENCES galaxy_type(galaxy_type_id)\
+\
+universe=> CREATE TABLE star(\
+universe(>     star_id SERIAL,\
+universe(>     name VARCHAR(30) UNIQUE NOT NULL,\
+universe(>     galaxy_id INT,\
+universe(>     nickname VARCHAR(15),\
+universe(>     constellation VARCHAR(30),\
+universe(>     PRIMARY KEY(star_id),\
+universe(>     CONSTRAINT fk_galaxy_id\
+universe(>         FOREIGN KEY(galaxy_id)\
+universe(>         REFERENCES galaxy(galaxy_id));\
+CREATE TABLE\
+universe=> \\d star\
+                                          Table "public.star"\
++---------------+-----------------------+-----------+----------+---------------------------------------+\
+|    Column     |         Type          | Collation | Nullable |                Default                |\
++---------------+-----------------------+-----------+----------+---------------------------------------+\
+| star_id       | integer               |           | not null | nextval('star_star_id_seq'::regclass) |\
+| name          | character varying(30) |           | not null |                                       |\
+| galaxy_id     | integer               |           |          |                                       |\
+| nickname      | character varying(15) |           |          |                                       |\
+| constellation | character varying(30) |           |          |                                       |\
++---------------+-----------------------+-----------+----------+---------------------------------------+\
+Indexes:\
+    "star_pkey" PRIMARY KEY, btree (star_id)\
+    "star_name_key" UNIQUE CONSTRAINT, btree (name)\
+Foreign-key constraints:\
+    "fk_galaxy_id" FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)\
+\
+universe=> CREATE TABLE planet(\
+universe(>     planet_id SERIAL,\
+universe(>     name VARCHAR(30) UNIQUE NOT NULL,\
+universe(>     star_id INT NOT NULL,\
+universe(>     in_habitable_zone BOOLEAN,\
+universe(>     orbital_period_in_days NUMERIC,\
+universe(>     number_of_moons INT,\
+universe(>     PRIMARY KEY(planet_id),\
+universe(>     CONSTRAINT fk_star_id\
+universe(>         FOREIGN KEY(star_id)\
+universe(>         REFERENCES star(star_id));\
+CREATE TABLE\
+universe=> \\d planet\
+                                                Table "public.planet"\
++------------------------+-----------------------+-----------+----------+-------------------------------------------+\
+|         Column         |         Type          | Collation | Nullable |                  Default                  |\
++------------------------+-----------------------+-----------+----------+-------------------------------------------+\
+| planet_id              | integer               |           | not null | nextval('planet_planet_id_seq'::regclass) |\
+| name                   | character varying(30) |           | not null |                                           |\
+| star_id                | integer               |           | not null |                                           |\
+| in_habitable_zone      | boolean               |           |          |                                           |\
+| orbital_period_in_days | numeric               |           |          |                                           |\
+| number_of_moons        | integer               |           |          |                                           |\
++------------------------+-----------------------+-----------+----------+-------------------------------------------+\
+Indexes:\
+    "planet_pkey" PRIMARY KEY, btree (planet_id)\
+    "planet_name_key" UNIQUE CONSTRAINT, btree (name)\
+Foreign-key constraints:\
+    "fk_star_id" FOREIGN KEY (star_id) REFERENCES star(star_id)\
+\
+universe=> CREATE TABLE moon(\
+universe(>     moon_id SERIAL,\
+universe(>     name VARCHAR(30) UNIQUE NOT NULL,\
+universe(>     planet_id INT NOT NULL,\
+universe(>     cool_fact TEXT,\
+universe(>     in_sync BOOLEAN,\
+universe(>     PRIMARY KEY(moon_id),\
+universe(>     CONSTRAINT fk_planet_id\
+universe(>         FOREIGN KEY(planet_id)\
+universe(>         REFERENCES planet(planet_id));\
+CREATE TABLE\
+universe=> \\d moon\
+                                        Table "public.moon"\
++-----------+-----------------------+-----------+----------+---------------------------------------+\
+|  Column   |         Type          | Collation | Nullable |                Default                |\
++-----------+-----------------------+-----------+----------+---------------------------------------+\
+| moon_id   | integer               |           | not null | nextval('moon_moon_id_seq'::regclass) |\
+| name      | character varying(30) |           | not null |                                       |\
+| planet_id | integer               |           | not null |                                       |\
+| cool_fact | text                  |           |          |                                       |\
+| in_sync   | boolean               |           |          |                                       |\
++-----------+-----------------------+-----------+----------+---------------------------------------+\
+Indexes:\
+    "moon_pkey" PRIMARY KEY, btree (moon_id)\
+    "moon_name_key" UNIQUE CONSTRAINT, btree (name)\
+Foreign-key constraints:\
+    "fk_planet_id" FOREIGN KEY (planet_id) REFERENCES planet(planet_id)\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 -------------------- ADDING DATA --------------------
+\f0\b0 \
+universe=> INSERT INTO galaxy_type(name, is_regular) VALUES \
+universe->     ('Barred spiral', FALSE),\
+universe->     ('Dwarf', FALSE),\
+universe->     ('Starburst', TRUE),\
+universe->     ('Spiral', FALSE),\
+universe->     ('Peculiar', NULL),\
+universe->     ('Ring', NULL);\
+INSERT 0 6\
+universe=> SELECT * FROM galaxy_type;\
++----------------+---------------+------------+\
+| galaxy_type_id |     name      | is_regular |\
++----------------+---------------+------------+\
+|              1 | Barred spiral | f          |\
+|              2 | Dwarf         | f          |\
+|              3 | Starburst     | t          |\
+|              4 | Spiral        | f          |\
+|              5 | Peculiar      |            |\
+|              6 | Ring          |            |\
++----------------+---------------+------------+\
+(6 rows)\
+\
+universe=> INSERT INTO galaxy(name, galaxy_type_id, distance_in_Mly, constellation) VALUES \
+universe->     ('Milky Way', 1, 0, 'Sagittarius'),\
+universe->     ('Large Magellanic Cloud', 2, 158000, 'Dorado/Mensa'),\
+universe->     ('Andromeda', 1, 2500000, 'Andromeda'),\
+universe->     ('Cigar Galaxy', 3, 11500000, 'Ursa Major'),\
+universe->     ('Pinwheel Galaxy', 4, 20870000, 'Ursa Major'),\
+universe->     ('Sombero Galaxy', 5, 29350000, 'Virgo'),\
+universe->     ('Whirlpool Galaxy', 4, 30000000, ''),\
+universe->     ('NGC 1300', 1, 420000000, ''),\
+universe->     ('Tadpole Galaxy', 1, 420000000, ''),\
+universe->     ('Hoag''s Object', 6, 600000000, '');\
+INSERT 0 10\
+universe=> SELECT * FROM galaxy;\
++-----------+------------------------+----------------+-----------------+---------------+\
+| galaxy_id |          name          | galaxy_type_id | distance_in_mly | constellation |\
++-----------+------------------------+----------------+-----------------+---------------+\
+|         1 | Milky Way              |              1 |               0 | Sagittarius   |\
+|         2 | Large Magellanic Cloud |              2 |          158000 | Dorado/Mensa  |\
+|         3 | Andromeda              |              1 |         2500000 | Andromeda     |\
+|         4 | Cigar Galaxy           |              3 |        11500000 | Ursa Major    |\
+|         5 | Pinwheel Galaxy        |              4 |        20870000 | Ursa Major    |\
+|         6 | Sombero Galaxy         |              5 |        29350000 | Virgo         |\
+|         7 | Whirlpool Galaxy       |              4 |        30000000 |               |\
+|         8 | NGC 1300               |              1 |       420000000 |               |\
+|         9 | Tadpole Galaxy         |              1 |       420000000 |               |\
+|        10 | Hoag's Object          |              6 |       600000000 |               |\
++-----------+------------------------+----------------+-----------------+---------------+\
+(10 rows)\
+\
+universe=> INSERT INTO star(name, galaxy_id, nickname, constellation) VALUES \
+universe->     ('Sun', 1, NULL, NULL),\
+universe->     ('Polaris', 1, 'North Star', 'Ursa Minor'),\
+universe->     ('Kepler-442', 1, NULL, 'Lyra'),\
+universe->     ('Trappist-1', 1, NULL, 'Aquarius'),\
+universe->     ('Titawin', 1, NULL, 'Anddromeda'),\
+universe->     ('Gliese 667 C', 1, NULL, 'Scorpius'),\
+universe->     ('Proxima Centauri', 1, NULL, 'Centaurus');\
+INSERT 0 7\
+universe=> SELECT * FROM star;\
++---------+------------------+-----------+------------+---------------+\
+| star_id |       name       | galaxy_id |  nickname  | constellation |\
++---------+------------------+-----------+------------+---------------+\
+|       1 | Sun              |         1 |            |               |\
+|       2 | Polaris          |         1 | North Star | Ursa Minor    |\
+|       3 | Kepler-442       |         1 |            | Lyra          |\
+|       4 | Trappist-1       |         1 |            | Aquarius      |\
+|       5 | Titawin          |         1 |            | Anddromeda    |\
+|       6 | Gliese 667 C     |         1 |            | Scorpius      |\
+|       7 | Proxima Centauri |         1 |            | Centaurus     |\
++---------+------------------+-----------+------------+---------------+\
+(7 rows)\
+\
+universe=> INSERT INTO planet(name, star_id, in_habitable_zone, orbital_period_in_days, number_of_moons) VALUES \
+universe->     ('Mercury', 1, false, 112300, NULL),\
+universe->     ('Venus', 1, true, 224700, NULL),\
+universe->     ('Earth', 1, true, 365250, 1),\
+universe->     ('Mars', 1, true, 687000, 2),\
+universe->     ('Jupiter', 1, false, 4330600, 95),\
+universe->     ('Saturn', 1, false, 10756000, NULL),\
+universe->     ('Uranus', 1, false, 30687000, NULL),\
+universe->     ('Neptune', 1, false, 60190000, 16),\
+universe->     ('Kepler-442b', 4, true, 112000, 0),\
+universe->     ('Gliese 667 Cc', 7, true, 28155, NULL);\
+INSERT 0 10\
++-----------+---------------+---------+-------------------+------------------------+-----------------+\
+| planet_id |     name      | star_id | in_habitable_zone | orbital_period_in_days | number_of_moons |\
++-----------+---------------+---------+-------------------+------------------------+-----------------+\
+|         1 | Mercury       |       1 | f                 |                 112300 |                 |\
+|         2 | Venus         |       1 | t                 |                 224700 |                 |\
+|         3 | Earth         |       1 | t                 |                 365250 |               1 |\
+|         4 | Mars          |       1 | t                 |                 687000 |               2 |\
+|         5 | Jupiter       |       1 | f                 |                4330600 |              95 |\
+|         6 | Saturn        |       1 | f                 |               10756000 |                 |\
+|         7 | Uranus        |       1 | f                 |               30687000 |                 |\
+|         8 | Neptune       |       1 | f                 |               60190000 |              16 |\
+|         9 | Kepler-442b   |       4 | t                 |                 112000 |               0 |\
+|        10 | Gliese 667 Cc |       7 | t                 |                  28155 |                 |\
++-----------+---------------+---------+-------------------+------------------------+-----------------+\
+(10 rows)\
+\
+universe=> INSERT INTO moon(name, planet_id, cool_fact, in_sync) VALUES \
+universe->     ('Moon', 3, NULL, true),\
+universe->     ('Io', 5, 'Io''s volcanoes are at times so powerful that they are seen with large telescopes on Earth.', true),\
+universe->     ('Ganymede', 5, 'Ganymede is the largest moon in the solar system, and is the only moon to have its own magnetic field - and the atmospheric auroras that come with that.', NULL),\
+universe->     ('Callisto', 5, 'Callisto is the most heavily cratered object in our solar system.', NULL),\
+universe->     ('Europa', 5, 'Abundant liquid water, energy, and the right chemical elements make Europa one of the best places in the solar sytem to seek present-day life beyond Earth.', true),\
+universe->     ('Phobos', 4, 'Phobos orbits Mars three times a day, and is so close to the planet''s surface that in some locagtions on Mars it cannot always be seen.', NULL),\
+universe->     ('Galatea', 8, NULL, NULL);\
+INSERT 0 7\
+universe=> SELECT * FROM moon;\
++---------+----------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+\
+| moon_id |   name   | planet_id |                                                                          cool_fact                                                                          | in_sync |\
++---------+----------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+\
+|       1 | Moon     |         3 |                                                                                                                                                             | t       |\
+|       2 | Io       |         5 | Io's volcanoes are at times so powerful that they are seen with large telescopes on Earth.                                                                  | t       |\
+|       3 | Ganymede |         5 | Ganymede is the largest moon in the solar system, and is the only moon to have its own magnetic field - and the atmospheric auroras that come with that.    |         |\
+|       4 | Callisto |         5 | Callisto is the most heavily cratered object in our solar system.                                                                                           |         |\
+|       5 | Europa   |         5 | Abundant liquid water, energy, and the right chemical elements make Europa one of the best places in the solar sytem to seek present-day life beyond Earth. | t       |\
+|       6 | Phobos   |         4 | Phobos orbits Mars three times a day, and is so close to the planet's surface that in some locagtions on Mars it cannot always be seen.                     |         |\
+|       7 | Galatea  |         8 |                                                                                                                                                             |         |\
++---------+----------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+\
+(7 rows)\
+\
+\
+
+\f1\b -------------------- CHANGING DATATYPE --------------------
+\f0\b0 \
+universe=> ALTER TABLE planet ALTER COLUMN orbital_period_in_days TYPE INT;\
+ALTER TABLE\
+universe=> \\d planet\
+                                                Table "public.planet"\
++------------------------+-----------------------+-----------+----------+-------------------------------------------+\
+|         Column         |         Type          | Collation | Nullable |                  Default                  |\
++------------------------+-----------------------+-----------+----------+-------------------------------------------+\
+| planet_id              | integer               |           | not null | nextval('planet_planet_id_seq'::regclass) |\
+| name                   | character varying(30) |           | not null |                                           |\
+| star_id                | integer               |           | not null |                                           |\
+| in_habitable_zone      | boolean               |           |          |                                           |\
+| orbital_period_in_days | integer               |           |          |                                           |\
+| number_of_moons        | integer               |           |          |                                           |\
++------------------------+-----------------------+-----------+----------+-------------------------------------------+\
+Indexes:\
+    "planet_pkey" PRIMARY KEY, btree (planet_id)\
+    "planet_name_key" UNIQUE CONSTRAINT, btree (name)\
+Foreign-key constraints:\
+    "fk_star_id" FOREIGN KEY (star_id) REFERENCES star(star_id)\
+Referenced by:\
+    TABLE "moon" CONSTRAINT "fk_planet_id" FOREIGN KEY (planet_id) REFERENCES planet(planet_id)\
+\
+\
+
+\f1\b -------------------- ADDING MORE DATA --------------------
+\f0\b0 \
+universe=> INSERT INTO moon(name, planet_id, cool_fact) VALUES \
+universe->     ('Triton', 8, 'Irregular'),\
+universe->     ('Nereid', 8, 'Irregular'),\
+universe->     ('Halimede', 8, 'Irregular'),\
+universe->     ('Sao', 8, 'Irregular'),\
+universe->     ('Laomedeia', 8, 'Irregular'),\
+universe->     ('Psamathe', 8, 'Irregular'),\
+universe->     ('Neso', 8, 'Irregular'),\
+universe->     ('Despina', 8, 'Regular'),\
+universe->     ('Larissa', 8, 'Regular'),\
+universe->     ('Hippocamp', 8, 'Regular'),\
+universe->     ('Proteus', 8, 'Regular'),\
+universe->     ('Thalassa', 8, 'Regular'),\
+universe->     ('Naiad', 8, 'Regular');\
+INSERT 0 13\
+universe=> SELECT * FROM moon;\
++---------+-----------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+\
+| moon_id |   name    | planet_id |                                                                          cool_fact                                                                          | in_sync |\
++---------+-----------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+\
+|       1 | Moon      |         3 |                                                                                                                                                             | t       |\
+|       2 | Io        |         5 | Io's volcanoes are at times so powerful that they are seen with large telescopes on Earth.                                                                  | t       |\
+|       3 | Ganymede  |         5 | Ganymede is the largest moon in the solar system, and is the only moon to have its own magnetic field - and the atmospheric auroras that come with that.    |         |\
+|       4 | Callisto  |         5 | Callisto is the most heavily cratered object in our solar system.                                                                                           |         |\
+|       5 | Europa    |         5 | Abundant liquid water, energy, and the right chemical elements make Europa one of the best places in the solar sytem to seek present-day life beyond Earth. | t       |\
+|       6 | Phobos    |         4 | Phobos orbits Mars three times a day, and is so close to the planet's surface that in some locagtions on Mars it cannot always be seen.                     |         |\
+|       7 | Galatea   |         8 |                                                                                                                                                             |         |\
+|       8 | Triton    |         8 | Irregular                                                                                                                                                   |         |\
+|       9 | Nereid    |         8 | Irregular                                                                                                                                                   |         |\
+|      10 | Halimede  |         8 | Irregular                                                                                                                                                   |         |\
+|      11 | Sao       |         8 | Irregular                                                                                                                                                   |         |\
+|      12 | Laomedeia |         8 | Irregular                                                                                                                                                   |         |\
+|      13 | Psamathe  |         8 | Irregular                                                                                                                                                   |         |\
+|      14 | Neso      |         8 | Irregular                                                                                                                                                   |         |\
+|      15 | Despina   |         8 | Regular                                                                                                                                                     |         |\
+|      16 | Larissa   |         8 | Regular                                                                                                                                                     |         |\
+|      17 | Hippocamp |         8 | Regular                                                                                                                                                     |         |\
+|      18 | Proteus   |         8 | Regular                                                                                                                                                     |         |\
+|      19 | Thalassa  |         8 | Regular                                                                                                                                                     |         |\
+|      20 | Naiad     |         8 | Regular                                                                                                                                                     |         |\
++---------+-----------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+\
+(20 rows)\
+\
+universe=> INSERT INTO planet(name, star_id, in_habitable_zone, orbital_period_in_days) VALUES\
+universe->     ('Trappist-1b', 5, false, 1.5),\
+universe->     ('Trappist-1g', 5, true, 12.352);\
+INSERT 0 2\
+universe=> SELECT * FROM planet;\
++-----------+---------------+---------+-------------------+------------------------+-----------------+\
+| planet_id |     name      | star_id | in_habitable_zone | orbital_period_in_days | number_of_moons |\
++-----------+---------------+---------+-------------------+------------------------+-----------------+\
+|         1 | Mercury       |       1 | f                 |                 112300 |                 |\
+|         2 | Venus         |       1 | t                 |                 224700 |                 |\
+|         3 | Earth         |       1 | t                 |                 365250 |               1 |\
+|         4 | Mars          |       1 | t                 |                 687000 |               2 |\
+|         5 | Jupiter       |       1 | f                 |                4330600 |              95 |\
+|         6 | Saturn        |       1 | f                 |               10756000 |                 |\
+|         7 | Uranus        |       1 | f                 |               30687000 |                 |\
+|         8 | Neptune       |       1 | f                 |               60190000 |              16 |\
+|         9 | Kepler-442b   |       4 | t                 |                 112000 |               0 |\
+|        10 | Gliese 667 Cc |       7 | t                 |                  28155 |                 |\
+|        11 | Trappist-1b   |       5 | f                 |                      2 |                 |\
+|        12 | Trappist-1g   |       5 | t                 |                     12 |                 |\
++-----------+---------------+---------+-------------------+------------------------+-----------------+\
+(12 rows)\
+}
